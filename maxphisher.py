@@ -338,11 +338,7 @@ ts_commands = {
 
 # Check if a process is running by 'command -v' command. If it has a output exit_code will be 0 and package is already installed
 def is_installed(package):
-    exit_code = bgtask(f"command -v {package}").wait() # system(f"command -v {package} > /dev/null 2>&1")
-    if exit_code == 0:
-        return True
-    return False
-
+    return bgtask(f"command -v {package}").wait() == 0
 
 # Check if a process is running by 'pidof' command. If pidof has a output exit_code will be 0 and process is running
 def is_running(process):
@@ -524,8 +520,6 @@ def get_meta(url):
     if "facebook" in url:
         headers.update({
             "upgrade-insecure-requests": "1",
-            "user-agent": "Mozilla/5.0 (Linux; Android 8.1.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.99 Safari/537.36", 
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*[inserted by cython to avoid comment closer]/[inserted by cython to avoid comment start]*;q=0.8,application/signed-exchange;v=b3;q=0.9", 
             "dnt": "1", 
             "content-type": "application/x-www-form-url-encoded",
             "origin": "https://m.facebook.com",
@@ -535,8 +529,7 @@ def get_meta(url):
             "sec-fetch-user": "empty", 
             "sec-fetch-dest": "document", 
             "sec-ch-ua-platform": "Android",
-            "accept-encoding": "gzip, deflate br", 
-            "accept-language": "en-GB,en-US;q=0.9,en;q=0.8"
+            "accept-encoding": "gzip, deflate br"
         })
     allmeta = ""
     try:
@@ -788,13 +781,11 @@ def extract(filename, extract_path='.'):
         
 
 def get_media():
+    extension_filter = lambda filename: filename.split('.')[-1] in extensions
     media_files = []
-    for file in listdir(site_dir):
-        extension = file.split(".")[-1]
-        if extension in extensions:
-            if file=="desc.png" or file=="kk.jpg":
-                continue
-            media_files.append(f"{site_dir}/{file}")
+    for filename in filter(extension_filter, listdir(site_dir)):
+        if filename not in ["desc.png", "kk.jpg"]:
+            media_files.append(f"{site_dir}/{filename}")
     return media_files
 
 def write_meta(url):
