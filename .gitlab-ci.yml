@@ -1,0 +1,28 @@
+stages:
+  - build
+  - deploy
+
+image: python:3.10-slim  # Adjust Python version as needed
+
+variables:
+  PYPI_USERNAME: __token__
+  PYPI_PASSWORD: $PYPI_TOKEN  # Replace with actual environment variable name
+
+build:
+  stage: build
+  script:
+    - pip install poetry
+    - poetry config repositories.pypi.url https://upload.pypi.org/v3/  # Update for PyPI Simple repository
+    - poetry build
+  artifacts:
+    paths:
+      - dist/*.whl
+
+deploy:
+  stage: deploy
+  script:
+    - poetry publish --username $PYPI_USERNAME --password $PYPI_PASSWORD
+  only:
+    - schedules  # Run only on manual triggers
+  dependencies:
+    - build

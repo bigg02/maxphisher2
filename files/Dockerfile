@@ -2,6 +2,7 @@
 
 # Author       : KasRoudra
 # Github       : https://github.com/KasRoudra
+# Gitlab       : https://gitlab.com/KasRoudra
 # Messenger    : https://m.me/KasRoudra
 # Email        : kasroudrakrd@gmail.com
 # Date         : 08-09-2022
@@ -15,18 +16,18 @@ FROM debian:latest
 FROM python:3
 
 # Author info
-LABEL MAINTAINER="https://github.com/KasRoudra/MaxPhisher"
+LABEL MAINTAINER="https://gitlab.com/KasRoudra/MaxPhisher"
 
 # Working directory
-WORKDIR MaxPhisher/
+WORKDIR /MaxPhisher/
 # Add files 
 ADD . /MaxPhisher
 
 # Installing other packages
 RUN apt-get update
 RUN apt-get upgrade -y
-RUN apt-get install php openssh-client -y
-RUN pip3 install -r files/requirements.txt
+RUN apt-get install python3-pip php openssh-client -y
+RUN pip3 install -r files/requirements.txt --break-system-packages
 RUN apt-get clean
 
 # Main command
